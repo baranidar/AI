@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-left">
+      <a class="btn-nav" href="/home">Home</a>
+      <a class="btn-nav" href="/about">About</a>
+      <a id="login-link" class="btn-nav" href="/login">Login</a>
+    </div>
+    <div class="nav-right">
+      <span id="user-name" aria-live="polite"></span>
+      <button id="logout-btn" class="btn-nav hidden">Logout</button>
+    </div>
+  </header>
+
+  <main class="card" style="max-width:900px; margin:2rem auto;">
+    <h1>About</h1>
+    <p class="lead">This is an example About page. It's static and demonstrates navigation.</p>
+  </main>
+
+  <script>
+  (function(){
+    function getUser(){ try { return JSON.parse(localStorage.getItem('user')); } catch(e){return null;} }
+    function clearUser(){ localStorage.removeItem('user'); }
+    var loginLink = document.getElementById('login-link');
+    var logoutBtn = document.getElementById('logout-btn');
+    var userName = document.getElementById('user-name');
+    function refreshNav(){ var u = getUser(); if (u && u.username){ userName.textContent = u.username; loginLink.textContent = 'Profile'; loginLink.href = '/home'; logoutBtn.classList.remove('hidden'); } else { userName.textContent = ''; loginLink.textContent = 'Login'; loginLink.href = '/login'; logoutBtn.classList.add('hidden'); } }
+    document.addEventListener('DOMContentLoaded', function(){ refreshNav(); logoutBtn.addEventListener('click', function(){ clearUser(); window.location.href = '/login'; }); });
+  })();
+  </script>
+</body>
+</html>

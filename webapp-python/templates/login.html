@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-left">
+      <a class="btn-nav" href="/home">Home</a>
+      <a class="btn-nav" href="/about">About</a>
+      <a id="login-link" class="btn-nav" href="/login">Login</a>
+    </div>
+    <div class="nav-right">
+      <span id="user-name" aria-live="polite"></span>
+      <button id="logout-btn" class="btn-nav hidden">Logout</button>
+    </div>
+  </header>
+
+  <main class="card" style="max-width:480px; margin:2rem auto;">
+    <h1>Login</h1>
+    <form id="login-form">
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" required />
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required />
+      <div style="margin-top:1rem; display:flex; gap:0.5rem;">
+        <button id="login-btn" class="btn">Login</button>
+        <button id="cancel-btn" type="button" class="btn btn-secondary">Cancel</button>
+      </div>
+    </form>
+    <div id="status" aria-live="polite" style="margin-top:1rem; color:var(--coral);"></div>
+  </main>
+
+  <script>
+  (function(){
+    var loginForm = document.getElementById('login-form');
+    var status = document.getElementById('status');
+    function setUser(u){ localStorage.setItem('user', JSON.stringify(u)); }
+    function getUser(){ try { return JSON.parse(localStorage.getItem('user')); } catch(e){return null;} }
+    function clearUser(){ localStorage.removeItem('user'); }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      // If already logged in, go to home
+      if (getUser() && getUser().username){ window.location.href = '/home'; return; }
+
+      document.getElementById('cancel-btn').addEventListener('click', function(){
+        // navigate to error page
+        window.location.href = '/error';
+      });
+
+      loginForm.addEventListener('submit', function(e){
+        e.preventDefault();
+        var u = document.getElementById('username').value || '';
+        var p = document.getElementById('password').value || '';
+        // simple check
+        if (u === 'admin' && p === 'password'){
+          setUser({ username: u });
+          // redirect to home and show name
+          window.location.href = '/home';
+        } else {
+          status.textContent = 'Invalid credentials. Try "admin" / "password".';
+        }
+      });
+
+      // navbar behavior (show username if logged in)
+      var loginLink = document.getElementById('login-link');
+      var logoutBtn = document.getElementById('logout-btn');
+      var userName = document.getElementById('user-name');
+      function refreshNav(){ var u = getUser(); if (u && u.username){ userName.textContent = u.username; loginLink.textContent = 'Profile'; loginLink.href = '/home'; logoutBtn.classList.remove('hidden'); } else { userName.textContent = ''; loginLink.textContent = 'Login'; loginLink.href = '/login'; logoutBtn.classList.add('hidden'); } }
+      refreshNav();
+      logoutBtn.addEventListener('click', function(){ clearUser(); window.location.href = '/login'; });
+    });
+  })();
+  </script>
+</body>
+</html>
